@@ -47,15 +47,14 @@ cache:
       - zlib
       - zstd
   build:
-    script: build_install
+    script: build
 
 outputs:
   # Contains everything
   - package:
       name: llvmdev
     build:
-      files:
-        - "*"
+      script: install
     requirements:
       build:
         - ${{ stdlib('c') }}
@@ -120,13 +119,7 @@ outputs:
   - package:
       name: libllvm${{ major_ver }}
     build:
-      # activate_in_script: true
-      # script: build_install.sh  # [not win]
-      files:
-        - if: win
-          then: "*"
-        - if: not win
-          then: lib/*
+      script: install
     requirements:
       build:
         - ${{ stdlib('c') }}
@@ -158,8 +151,9 @@ outputs:
   # for run_exports
   - package:
       name: llvm
-    # build:
-    #   script: build_install
+    build:
+      script:
+        - ;
     requirements:
       build:
       host:
@@ -186,12 +180,7 @@ outputs:
   - package:
       name: llvm-tools
     build:
-      # activate_in_script: true
-      files:
-        - if: win
-          then: "*"
-        - if: not win
-          then: bin/*
+      script: install
     requirements:
       build:
         - ${{ stdlib('c') }}
@@ -233,11 +222,7 @@ outputs:
       skip:
         - not win
       # activate_in_script: true
-      files:
-        - if: win
-          then: "*"
-        - if: not win
-          then: lib/libLLVM-C*
+      script: install
     requirements:
       build:
         - ${{ stdlib('c') }}
