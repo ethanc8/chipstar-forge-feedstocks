@@ -1,0 +1,223 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+context:
+  version: 6.0
+  build_number: 1
+  sha256: de9710223fc1855f833dbbf42ea2681e06aa8ec0464f0201104dc80a74dfd1f2
+  llvm_version: 15.0.7
+
+recipe:
+  name: pocl-core
+  version: ${{ version }}
+
+source:
+  - url: https://github.com/pocl/pocl/archive/refs/tags/v${{ version | replace(".rc", "-RC") }}.tar.gz
+    sha256: ${{ sha256 }}
+    patches:
+      - patches/gh1392.patch
+      - if: ppc64le
+        then: patches/alignof.diff
+      - patches/pocld.diff
+
+build:
+  number: ${{ build_number }}
+  skip:
+    - win
+  script:
+    secrets:
+      - if: enable_cuda
+        then: CUDA_HOME
+
+cache:
+  requirements:
+    build:
+      - cmake
+      - make
+      - pkg-config
+      - if: not osx
+        then: ${{ compiler('cxx') }}
+      - if: osx
+        then: clangxx_${{ target_platform }} ${{ llvm_version }}.*
+      - if: build_platform != target_platform
+        then: llvmdev ${{ llvm_version }}.*
+      - if: build_platform != target_platform
+        then: clangdev ${{ llvm_version }}.*
+      - ${{ stdlib("c") }}
+    host:
+      - if: linux
+        then: ocl-icd
+      - if: osx
+        then: khronos-opencl-icd-loader
+      - libhwloc
+      - clhpp
+      - llvmdev ${{ llvm_version }}.*
+      - clangdev ${{ llvm_version }}.*
+      - llvm ${{ llvm_version }}.*
+      - libclang-cpp ${{ llvm_version }}.*
+      - llvm-spirv-${{ llvm_version | split(".") | first }}
+      - if: osx
+        then: zlib
+      - if: osx
+        then: ld64 >=530,<711
+    run:
+      - llvm-spirv-${{ llvm_version | split(".") | first }}
+      - if: linux
+        then: ocl-icd
+      - if: osx
+        then: khronos-opencl-icd-loader
+      # See https://github.com/conda-forge/cctools-and-ld64-feedstock/issues/66
+      # why we need the upper bound for ld64
+      - if: osx
+        then: ld64 >=530,<711
+      - ${{ pin_compatible('libhwloc') }}
+    run_constraints:
+      - pocl ${{ version }}.*
+  build:
+    script: build
+  # tests:
+  #   - script:
+  #     - if: unix
+  #       then: test -f $PREFIX/lib/libpocl${SHLIB_EXT}
+
+outputs:
+  - package:
+      name: pocl-core
+    build:
+      script: install-pkg
+  - package:
+      name: pocl-cpu-minimal
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - ${{ stdlib('c') }}
+      host:
+        - ${{ pin_subpackage("pocl-core", exact=True) }}
+        - llvm ${{ llvm_version }}.*
+        - libhwloc
+      run:
+        - ${{ pin_subpackage("pocl-core", exact=True) }}
+    tests:
+      - script:
+          - if: unix
+            then: test -f $PREFIX/lib/pocl/libpocl-devices-basic.so
+    build:
+      script: install-pkg
+  - package:
+      name: pocl-cpu
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - ${{ stdlib('c') }}
+      host:
+        - ${{ pin_subpackage("pocl-core", exact=True) }}
+        - ${{ pin_subpackage("pocl-cpu-minimal", exact=True) }}
+        - llvm ${{ llvm_version }}.*
+        - libhwloc
+      run:
+        - ${{ pin_subpackage("pocl-core", exact=True) }}
+        - ${{ pin_subpackage("pocl-cpu-minimal", exact=True) }}
+    tests:
+      - requirements:
+          run:
+            - pyopencl
+            - curl
+            - pocl-cpu
+        script:
+          - if: unix
+            then: test -f $PREFIX/lib/pocl/libpocl-devices-pthread.so
+          - if: osx
+            then: rm -f $PREFIX/etc/OpenCL/vendors/apple.icd
+          - if: linux
+            then: export OCL_ICD_DEBUG=15
+          - export POCL_DEBUG=1
+          - curl -O https://raw.githubusercontent.com/inducer/pyopencl/main/examples/demo.py
+          - python demo.py
+    build:
+      script: install-pkg
+  - package:
+      name: pocl-cuda
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - ${{ stdlib('c') }}
+      host:
+        - ${{ pin_subpackage("pocl-core", exact=True) }}
+        - llvm ${{ llvm_version }}.*
+        - libhwloc
+      run:
+        - ${{ pin_subpackage("pocl-core", exact=True) }}
+      run_constraints:
+        - if: not ppc64le
+          then: __cuda >=11
+        - if: ppc64le
+          then: __cuda >=10.2
+    tests:
+      - script:
+          - if: unix
+            then: test -f $PREFIX/lib/pocl/libpocl-devices-cuda.so
+    build:
+      skip:
+        - not enable_cuda
+      script: install-pkg
+  - package:
+      name: pocl-remote
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - ${{ stdlib('c') }}
+      host:
+        - ${{ pin_subpackage("pocl-core", exact=True) }}
+        - llvm ${{ llvm_version }}.*
+        - libhwloc
+      run:
+        - ${{ pin_subpackage("pocl-core", exact=True) }}
+    tests:
+      - script:
+          - if: unix
+            then: test -f $PREFIX/lib/pocl/libpocl-devices-remote.so
+    build:
+      script: install-pkg
+  - package:
+      name: pocl
+    requirements:
+      host:
+        # Need hwloc here for the pocl meta-package to have two hashes
+        # Otherwise only one of them gets uploaded and the `exact=True`
+        # conditions below prevent installations
+        - libhwloc
+      run:
+        - ${{ pin_subpackage("pocl-core", exact=True) }}
+        - ${{ pin_subpackage("pocl-cpu", exact=True) }}
+        - ${{ pin_subpackage("pocl-cpu-minimal", exact=True) }}
+        - ${{ pin_subpackage("pocl-remote", exact=True) }}
+        - if: enable_cuda
+          then: ${{ pin_subpackage("pocl-cuda", exact=True) }}
+    tests:
+      - downstream: pyopencl
+      - script:
+          - if: unix
+            then: test -f $PREFIX/lib/pocl/libpocl-devices-pthread.so
+          - if: unix
+            then: test -f $PREFIX/lib/pocl/libpocl-devices-basic.so
+          - if: enable_cuda
+            then: test -f $PREFIX/lib/pocl/libpocl-devices-cuda.so
+
+about:
+  license: MIT
+  license_file:
+    - LICENSE
+    - LLVM-License.txt
+    - if: osx
+      then: LICENSE_THIRDPARTY
+  summary: Portable Computing Language -- a portable open source implementation of the OpenCL standard
+  homepage: http://portablecl.org/
+  repository: https://github.com/pocl/pocl
+  documentation: http://portablecl.org/docs/html/
+
+extra:
+  feedstock-name: pocl
+  recipe-maintainers:
+    - inducer
+    - mattwala
+    - isuruf
+    - matthiasdiener
+
