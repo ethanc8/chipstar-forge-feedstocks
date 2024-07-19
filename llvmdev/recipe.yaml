@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
 context:
   version: 17.0.6
   major_ver: 17
@@ -26,32 +27,35 @@ build:
   number: 2
   merge_build_and_host_envs: false
 
-# requirements:
-#   build:
-#     - ${{ stdlib('c') }}
-#     - ${{ compiler('cxx') }}
-#     - cmake
-#     - ninja
-#     - python >=3
-#     - if: osx
-#       then: libcxx ${{ cxx_compiler_version }}
-#   host:
-#     - if: osx
-#       then: libcxx ${{ cxx_compiler_version }}
-#     # needs aarch/ppc/arm (re)build of conda-forge/backtrace-feedstock
-#     - if: unix and x86
-#       then: backtrace
-#     - libxml2
-#     - zlib
-#     - zstd
+cache:
+  requirements:
+    build:
+      - ${{ stdlib('c') }}
+      - ${{ compiler('cxx') }}
+      - cmake
+      - ninja
+      - python >=3
+      - if: osx
+        then: libcxx ${{ cxx_compiler_version }}
+    host:
+      - if: osx
+        then: libcxx ${{ cxx_compiler_version }}
+      # needs aarch/ppc/arm (re)build of conda-forge/backtrace-feedstock
+      - if: unix and x86
+        then: backtrace
+      - libxml2
+      - zlib
+      - zstd
+  build:
+    script: build_install
 
 outputs:
   # Contains everything
   - package:
       name: llvmdev
     build:
-      # activate_in_script: true
-      script: build_install
+      files:
+        - "*"
     requirements:
       build:
         - ${{ stdlib('c') }}
@@ -117,7 +121,12 @@ outputs:
       name: libllvm${{ major_ver }}
     build:
       # activate_in_script: true
-      script: build_install.sh  # [not win]
+      # script: build_install.sh  # [not win]
+      files:
+        - if: win
+          then: "*"
+        - if: not win
+          then: lib/*
     requirements:
       build:
         - ${{ stdlib('c') }}
@@ -139,7 +148,6 @@ outputs:
       run:
         - if: osx
           then: libcxx >=${{ cxx_compiler_version }}
-      run_exports:
     tests:
       - script:
           - if: linux
@@ -150,8 +158,8 @@ outputs:
   # for run_exports
   - package:
       name: llvm
-    build:
-      script: build_install
+    # build:
+    #   script: build_install
     requirements:
       build:
       host:
@@ -179,7 +187,11 @@ outputs:
       name: llvm-tools
     build:
       # activate_in_script: true
-      script: build_install
+      files:
+        - if: win
+          then: "*"
+        - if: not win
+          then: bin/*
     requirements:
       build:
         - ${{ stdlib('c') }}
@@ -221,7 +233,11 @@ outputs:
       skip:
         - not win
       # activate_in_script: true
-      script: build_install
+      files:
+        - if: win
+          then: "*"
+        - if: not win
+          then: lib/libLLVM-C*
     requirements:
       build:
         - ${{ stdlib('c') }}

@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
 context:
   name: llvm-spirv
   version: 17.0.0
@@ -19,17 +20,20 @@ build:
   skip:
     - not unix
 
-# requirements:
-#   build:
-#     - ${{ compiler('cxx') }}
-#     - cmake
-#     - make
-#     - pkg-config
-#   host:
-#     - llvmdev  ${{ llvm_version }}.*
-#     - llvm  ${{ llvm_version }}.*
-#     - spirv-headers
-#     - zlib
+cache:
+  requirements:
+    build:
+      - ${{ compiler('cxx') }}
+      - cmake
+      - make
+      - pkg-config
+    host:
+      - llvmdev  ${{ llvm_version }}.*
+      - llvm  ${{ llvm_version }}.*
+      - spirv-headers
+      - zlib
+  build:
+    script: build_install
 
 outputs:
   - package:
@@ -42,7 +46,6 @@ outputs:
           then: lib/libLLVMSPIRVLib.so.${{ major }}
       # ignore_run_exports_from:
       #   - zlib
-      script: build_install
     requirements:
       build:
         - ${{ compiler('cxx') }}
@@ -76,7 +79,6 @@ outputs:
         - include/LLVMSPIRVLib/
       # ignore_run_exports_from:
       #   - zlib
-      script: build_install
     requirements:
       build:
         - ${{ compiler('cxx') }}
@@ -106,7 +108,6 @@ outputs:
       #   - zlib
       files:
         - bin/llvm-spirv-${{ major }}
-      script: build_install
     requirements:
       build:
         - ${{ compiler('cxx') }}
@@ -132,7 +133,6 @@ outputs:
         - bin/llvm-spirv
       # ignore_run_exports_from:
       #   - zlib
-      script: build_install.sh
     requirements:
       build:
         - ${{ compiler('cxx') }}
