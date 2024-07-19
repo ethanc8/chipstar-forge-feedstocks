@@ -150,7 +150,8 @@ outputs:
   # for run_exports
   - package:
       name: llvm
-    # build:
+    build:
+      script: build_install
     requirements:
       build:
       host:
@@ -159,6 +160,8 @@ outputs:
         - libxml2
         - zlib
         - zstd
+        - cmake
+        - ninja
       run:  # [not win]
         - if: not win
           then: ${{ pin_subpackage("libllvm" + major_ver, exact=True) }}
