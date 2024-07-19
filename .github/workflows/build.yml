@@ -46,7 +46,7 @@ jobs:
         rattler-build build --recipe-dir . \
           --skip-existing=all --target-platform=$TARGET_PLATFORM \
           -c conda-forge -c https://prefix.dev/chipstar-forge \
-          --experimental --variant-config **/variants.yaml 
+          --experimental --variant-config $(for file in **/variants.yaml; do echo "-m$file"; done) 
 
     - name: Upload all packages
       shell: bash
