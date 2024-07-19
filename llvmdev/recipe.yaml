@@ -51,7 +51,7 @@ outputs:
       name: llvmdev
     build:
       # activate_in_script: true
-      script: install_llvm
+      script: build_install
     requirements:
       build:
         - ${{ stdlib('c') }}
@@ -117,7 +117,7 @@ outputs:
       name: libllvm${{ major_ver }}
     build:
       # activate_in_script: true
-      script: install_llvm.sh  # [not win]
+      script: build_install.sh  # [not win]
     requirements:
       build:
         - ${{ stdlib('c') }}
@@ -176,7 +176,7 @@ outputs:
       name: llvm-tools
     build:
       # activate_in_script: true
-      script: install_llvm
+      script: build_install
     requirements:
       build:
         - ${{ stdlib('c') }}
@@ -218,7 +218,7 @@ outputs:
       skip:
         - not win
       # activate_in_script: true
-      script: install_llvm
+      script: build_install
     requirements:
       build:
         - ${{ stdlib('c') }}
