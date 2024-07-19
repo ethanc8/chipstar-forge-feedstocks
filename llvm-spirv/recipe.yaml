@@ -1,0 +1,167 @@
+context:
+  name: llvm-spirv
+  version: 17.0.0
+  # llvm_version: ${{ version | split(".") | slice(2) | join('.') }}
+  # major: ${{ version | split('.') | first }}
+  llvm_version: 17.0
+  major: 17
+
+recipe:
+  name: llvm-spirv-split
+  version: ${{ version }}
+
+source:
+  url: "https://github.com/KhronosGroup/SPIRV-LLVM-Translator/archive/v{{ version | replace(\"_\", \"-\") }}.tar.gz"
+  sha256: eba381e1dd99b4ff6c672a28f52755d1adf2d810a97b51e6074ad4fa67937fb2
+
+build:
+  number: 0
+  skip:
+    - not unix
+
+# requirements:
+#   build:
+#     - ${{ compiler('cxx') }}
+#     - cmake
+#     - make
+#     - pkg-config
+#   host:
+#     - llvmdev  ${{ llvm_version }}.*
+#     - llvm  ${{ llvm_version }}.*
+#     - spirv-headers
+#     - zlib
+
+outputs:
+  - package:
+      name: libllvmspirv${{ major }}
+    build:
+      files:
+        - if: osx
+          then: lib/libLLVMSPIRVLib.${{ major }}.dylib
+        - if: linux
+          then: lib/libLLVMSPIRVLib.so.${{ major }}
+      # ignore_run_exports_from:
+      #   - zlib
+      script: build_install
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - cmake
+        - make
+        - pkg-config
+      host:
+        - llvmdev  ${{ llvm_version }}.*
+        - llvm  ${{ llvm_version }}.*
+        - zlib
+        - spirv-headers
+      run_constraints:
+        - llvmdev  ${{ llvm_version }}.*
+        - llvm-spirv ${{ version }}.* *_${{ PKG_BUILDNUM }}
+    tests:
+      - script:
+          - test ! -f ${PREFIX}/lib/libLLVMSPIRVLib${SHLIB_EXT}
+          - if: osx
+            then: test -f ${PREFIX}/lib/libLLVMSPIRVLib.${{ major }}.dylib
+          - if: linux
+            then: test -f ${PREFIX}/lib/libLLVMSPIRVLib.so.${{ major }}
+  - package:
+      name: libllvmspirv
+    build:
+      files:
+        - if: osx
+          then: lib/libLLVMSPIRVLib.dylib
+        - if: linux
+          then: lib/libLLVMSPIRVLib.so
+        - lib/pkgconfig/LLVMSPIRVLib.pc
+        - include/LLVMSPIRVLib/
+      # ignore_run_exports_from:
+      #   - zlib
+      script: build_install
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - cmake
+        - make
+        - pkg-config
+      host:
+        - llvmdev  ${{ llvm_version }}.*
+        - llvm  ${{ llvm_version }}.*
+        - zlib
+        - spirv-headers
+        - ${{ pin_subpackage("libllvmspirv" ~ major, exact=True) }}
+      run:
+        - ${{ pin_subpackage("libllvmspirv" ~ major, exact=True) }}
+      run_exports:
+        - ${{ pin_subpackage("libllvmspirv" ~ major) }}
+      run_constraints:
+        - llvmdev  ${{ llvm_version }}.*
+    tests:
+      - script:
+          - test -f ${PREFIX}/lib/libLLVMSPIRVLib${SHLIB_EXT}
+    # script: install.sh
+  - package:
+      name: llvm-spirv-${{ major }}
+    build:
+      # ignore_run_exports_from:
+      #   - zlib
+      files:
+        - bin/llvm-spirv-${{ major }}
+      script: build_install
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - cmake
+        - make
+        - pkg-config
+      host:
+        - llvmdev  ${{ llvm_version }}.*
+        - llvm  ${{ llvm_version }}.*
+        - zlib
+        - spirv-headers
+        - ${{ pin_subpackage("libllvmspirv" ~ major, exact=True) }}
+      run:
+        - ${{ pin_subpackage("libllvmspirv" ~ major, exact=True) }}
+    tests:
+      - script:
+          - ${PREFIX}/bin/llvm-spirv-${{ major }} -help
+    # script: install.sh
+  - package:
+      name: llvm-spirv
+    build:
+      files:
+        - bin/llvm-spirv
+      # ignore_run_exports_from:
+      #   - zlib
+      script: build_install.sh
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - cmake
+        - make
+        - pkg-config
+      host:
+        - llvmdev  ${{ llvm_version }}.*
+        - llvm  ${{ llvm_version }}.*
+        - zlib
+        - spirv-headers
+        - ${{ pin_subpackage("llvm-spirv-" ~ major, exact=True) }}
+      run:
+        - ${{ pin_subpackage("llvm-spirv-" ~ major, exact=True) }}
+    tests:
+      - script:
+          - ${PREFIX}/bin/llvm-spirv -help
+          - llvm-spirv -help
+    # script: install.sh
+
+about:
+  license: NCSA
+  license_file: LICENSE.TXT
+  summary: A tool and a library for bi-directional translation between SPIR-V and LLVM IR
+  homepage: https://github.com/KhronosGroup/SPIRV-LLVM-Translator
+
+extra:
+  feedstock-name: llvm-spirv
+  recipe-maintainers:
+    - isuruf
+    - matthiasdiener
+
