@@ -57,7 +57,7 @@ outputs:
       files:
         - "*"
       script:
-        - ;
+        - ":"
     requirements:
       build:
         - ${{ stdlib('c') }}
@@ -125,7 +125,7 @@ outputs:
       files:
         - lib/*
       script:
-        - ;
+        - ":"
     requirements:
       build:
         - ${{ stdlib('c') }}
@@ -159,7 +159,7 @@ outputs:
       name: llvm
     build:
       script:
-        - ;
+        - ":"
     requirements:
       build:
       host:
@@ -190,7 +190,7 @@ outputs:
         - if: not win
           then:
             - rm $PREFIX/bin/llvm-config
-        - ;
+        - ":"
       files:
         - bin/*
         - share/*
@@ -238,7 +238,7 @@ outputs:
       files:
         - lib/libLLVM-C*
       script:
-        - ;
+        - ":"
     requirements:
       build:
         - ${{ stdlib('c') }}
