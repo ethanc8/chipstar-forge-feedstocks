@@ -187,9 +187,9 @@ outputs:
       name: llvm-tools
     build:
       script:
-        - if: not win
-          then:
-            - rm $PREFIX/bin/llvm-config
+        # - if: not win
+        #   then:
+        #     - rm $PREFIX/bin/llvm-config
         - ":"
       files:
         - bin/*
