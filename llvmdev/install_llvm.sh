@@ -38,4 +38,7 @@ else
     cmake --install ./build --prefix=$PREFIX
 fi
 
+echo "Tree for \$PREFIX=$PREFIX..."
+tree "$PREFIX"
+
 rm -rf temp_prefix

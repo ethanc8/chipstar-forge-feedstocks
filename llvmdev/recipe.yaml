@@ -35,6 +35,7 @@ cache:
       - cmake
       - ninja
       - python >=3
+      - tree
       - if: osx
         then: libcxx ${{ cxx_compiler_version }}
     host:
