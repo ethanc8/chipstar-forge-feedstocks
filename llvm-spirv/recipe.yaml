@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
 context:
   name: llvm-spirv
-  version: 17.0.0
+  version: 17.0.2
   # llvm_version: ${{ version | split(".") | slice(2) | join('.') }}
   # major: ${{ version | split('.') | first }}
   llvm_version: 17.0
@@ -13,7 +13,7 @@ recipe:
 
 source:
   url: https://github.com/KhronosGroup/SPIRV-LLVM-Translator/archive/v${{ version | replace("_", "-") }}.tar.gz
-  sha256: eba381e1dd99b4ff6c672a28f52755d1adf2d810a97b51e6074ad4fa67937fb2
+  sha256: e90bd99b9abfb7051bbcf0909f23656b3b22692b9b6ce6319a50a7d9f28d4d6a
 
 build:
   number: 0
