@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Using package version $PKG_VERSION..."
 set -x
 cd build
 make install
