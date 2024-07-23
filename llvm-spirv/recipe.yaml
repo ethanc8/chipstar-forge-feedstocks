@@ -61,7 +61,7 @@ outputs:
         - spirv-headers
       run_constraints:
         - llvmdev  ${{ llvm_version }}.*
-        - llvm-spirv ${{ version }}.* *_${{ PKG_BUILDNUM }}
+        # - llvm-spirv ${{ version }}.* *_${{ PKG_BUILDNUM }}
     tests:
       - script:
           - test ! -f ${PREFIX}/lib/libLLVMSPIRVLib${SHLIB_EXT}
