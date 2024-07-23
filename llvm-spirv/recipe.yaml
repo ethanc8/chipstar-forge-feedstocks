@@ -103,7 +103,7 @@ outputs:
         - llvmdev  ${{ llvm_version }}.*
     tests:
       - script:
-          - test -f ${PREFIX}/lib/libLLVMSPIRVLib${SHLIB_EXT}
+          - test -e ${PREFIX}/lib/libLLVMSPIRVLib${SHLIB_EXT}
     # script: install.sh
   - package:
       name: llvm-spirv-${{ major }}
