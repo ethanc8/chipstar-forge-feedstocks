@@ -48,6 +48,7 @@ jobs:
       shell: bash
       run: |
         echo "$PATH"
+        which rattler-build
 
     - name: Run code in changed subdirectories
       shell: bash
