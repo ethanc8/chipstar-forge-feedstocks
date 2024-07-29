@@ -44,6 +44,11 @@ jobs:
         wget https://github.com/ethanc8/random-uploads/releases/download/rattler-build-099961f/rattler-build -O ~/.local/bin/rattler-build
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
+    - name: (debug) print $PATH
+      shell: bash
+      run: |
+        echo "$PATH"
+
     - name: Run code in changed subdirectories
       shell: bash
       env:
