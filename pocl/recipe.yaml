@@ -72,7 +72,7 @@ cache:
     run_constraints:
       - pocl ${{ version }}.*
   build:
-    script: build
+    script: build-pocl
   # tests:
   #   - script:
   #     - if: unix
