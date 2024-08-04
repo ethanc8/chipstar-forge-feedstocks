@@ -37,14 +37,6 @@ jobs:
       run: |
         echo "$(pwd)/.pixi/envs/default/bin" >> $GITHUB_PATH
 
-    - name: Install prerelease rattler-build
-      shell: bash
-      run: |
-        mkdir -p ~/.local/bin
-        wget https://github.com/ethanc8/random-uploads/releases/download/rattler-build-21666c8/rattler-build -O ~/.local/bin/rattler-build
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-        chmod +x ~/.local/bin/rattler-build
-
     - name: (debug) print $PATH
       shell: bash
       run: |
