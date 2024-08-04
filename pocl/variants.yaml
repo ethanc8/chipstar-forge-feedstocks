@@ -6,31 +6,31 @@ libhwloc:
     then: 1
   - 2
 
-docker_image:  # [linux64 or ppc64le or aarch64]
-  - if: linux64
+docker_image:
+  - if: linux and x86_64
     then: quay.io/condaforge/linux-anvil-cuda:11.2
-  - if: ppc64le
+  - if: linux and ppc64le
     then: quay.io/condaforge/linux-anvil-ppc64le-cuda:10.2
-  - if: aarch64
+  - if: linux and aarch64
     then: quay.io/condaforge/linux-anvil-aarch64-cuda:11.2
 
 cuda_compiler_version:
   - None
 
-cdt_name:  # [linux64 or ppc64le or aarch64]
-  - if: linux64
+cdt_name:
+  - if: linux and x86_64
     then: cos7
-  - if: ppc64le
+  - if: linux and ppc64le
     then: cos7
-  - if: aarch64
+  - if: linux and aarch64
     then: cos7
 
 cudnn:
   - undefined
 
 enable_cuda:
-  - ${{ true if linux64 or ppc64le or aarch64 }}
-  - ${{ false if not (linux64 or ppc64le or aarch64) }}
+  - ${{ true if linux and (x86_64 or ppc64le or aarch64) }}
+  - ${{ false if not (linux and (x86_64 or ppc64le or aarch64)) }}
 
 # these are the values `conda-forge` uses in their pinning file
 # found at https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/main/recipe/conda_build_config.yaml

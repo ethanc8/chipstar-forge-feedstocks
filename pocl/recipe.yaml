@@ -82,7 +82,20 @@ outputs:
   - package:
       name: pocl-core
     build:
-      script: install-pkg
+      files:
+        exclude:
+          # pocl-cpu-minimal
+          - /lib/pocl/libpocl-devices-basic.so
+          - /share/pocl/kernel-*.bc
+          # pocl-cpu
+          - /lib/pocl/libpocl-devices-pthread.so
+          # pocl-cuda
+          - /lib/pocl/libpocl-devices-cuda.so
+          - /share/pocl/kernel-nvptx64-*.bc
+          - /share/pocl/cuda
+          # pocl-remote
+          - /lib/pocl/libpocl-devices-remote.so
+    #   script: install-pkg
   - package:
       name: pocl-cpu-minimal
     requirements:
@@ -100,7 +113,13 @@ outputs:
           - if: unix
             then: test -f $PREFIX/lib/pocl/libpocl-devices-basic.so
     build:
-      script: install-pkg
+      files:
+        include:
+          - /lib/pocl/libpocl-devices-basic.so
+          - /share/pocl/kernel-*.bc
+        exclude:
+          - /share/pocl/kernel-nvptx64-*.bc
+    #   script: install-pkg
   - package:
       name: pocl-cpu
     requirements:
@@ -132,7 +151,9 @@ outputs:
           - curl -O https://raw.githubusercontent.com/inducer/pyopencl/main/examples/demo.py
           - python demo.py
     build:
-      script: install-pkg
+      files:
+        - /lib/pocl/libpocl-devices-pthread.so
+    #   script: install-pkg
   - package:
       name: pocl-cuda
     requirements:
@@ -155,9 +176,13 @@ outputs:
           - if: unix
             then: test -f $PREFIX/lib/pocl/libpocl-devices-cuda.so
     build:
+      files:
+        - /lib/pocl/libpocl-devices-cuda.so
+        - /share/pocl/kernel-nvptx64-*.bc
+        - /share/pocl/cuda
       skip:
         - not enable_cuda
-      script: install-pkg
+      # script: install-pkg
   - package:
       name: pocl-remote
     requirements:
@@ -175,7 +200,9 @@ outputs:
           - if: unix
             then: test -f $PREFIX/lib/pocl/libpocl-devices-remote.so
     build:
-      script: install-pkg
+      files:
+        - /lib/pocl/libpocl-devices-remote.so
+    #   script: install-pkg
   - package:
       name: pocl
     requirements:
