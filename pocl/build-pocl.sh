@@ -108,7 +108,8 @@ cmake \
   ${CMAKE_ARGS} \
   .. || { cat CMakeFiles/CMakeConfigureLog.yaml; exit 1; }
 
-make -j ${CPU_COUNT}
+# make -j ${CPU_COUNT}
+VERBOSE=1 make
 # install needs to come first for the pocl.icd to be found
 make install
 
