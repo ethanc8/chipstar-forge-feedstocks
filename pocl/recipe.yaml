@@ -3,7 +3,7 @@ context:
   version: 6.0
   build_number: 1
   sha256: de9710223fc1855f833dbbf42ea2681e06aa8ec0464f0201104dc80a74dfd1f2
-  llvm_version: 15.0.7
+  llvm_version: 17.0.6
 
 recipe:
   name: pocl-core
@@ -13,7 +13,8 @@ source:
   - url: https://github.com/pocl/pocl/archive/refs/tags/v${{ version | replace(".rc", "-RC") }}.tar.gz
     sha256: ${{ sha256 }}
     patches:
-      - patches/gh1392.patch
+      # #1392 was included into v6.0
+      # - patches/gh1392.patch
       - if: ppc64le
         then: patches/alignof.diff
       - patches/pocld.diff
