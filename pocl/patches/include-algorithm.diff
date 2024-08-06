@@ -1,0 +1,12 @@
+diff --git a/pocld/daemon.cc b/pocld/daemon.cc
+index af30b23..34af73a 100644
+--- a/pocld/daemon.cc
++++ b/pocld/daemon.cc
+@@ -22,6 +22,7 @@
+ */
+ 
+ #include <arpa/inet.h>
++#include <algorithm>
+ #include <ifaddrs.h>
+ #include <net/if.h>
+ #include <netdb.h>

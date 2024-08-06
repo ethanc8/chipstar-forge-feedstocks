@@ -18,6 +18,7 @@ source:
       - if: ppc64le
         then: patches/alignof.diff
       - patches/pocld.diff
+      - patches/include-algorithm.diff
 
 build:
   number: ${{ build_number }}
