@@ -10,3 +10,15 @@ index af30b23..34af73a 100644
  #include <ifaddrs.h>
  #include <net/if.h>
  #include <netdb.h>
+diff --git a/pocld/shared_cl_context.cc b/pocld/shared_cl_context.cc
+index b1678af..20aae7b 100644
+--- a/pocld/shared_cl_context.cc
++++ b/pocld/shared_cl_context.cc
+@@ -26,6 +26,7 @@
+ #include <unistd.h>
+ #include <cassert>
+ #include <cstdio>
++#include <algorithm>
+ #include <filesystem>
+ #include <fstream>
+ #include <iostream>
